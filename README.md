@@ -16,25 +16,31 @@ The Summit Nexus is a modern, high-performance web application connecting tech e
 ## 🛠️ Tech Stack
 
 *   **Frontend**: React (v19), TypeScript
-*   **Styling**: Tailwind CSS (custom configuration for glassmorphism and animations)
+*   **Styling**: Tailwind CSS (PostCSS pipeline)
+*   **Build Tool**: Vite
 *   **Icons**: Lucide React
 *   **AI Integration**: Google Gemini API (`@google/genai`)
-*   **Architecture**: Client-side ES Modules (ESM) architecture.
 
 ## ⚙️ Setup & Deployment
+
+### Local Development
+1.  Run `npm install`
+2.  Run `npm run dev`
 
 ### Environment Variables
 To enable the AI Strategic Briefing feature in the Executive Portal, you must provide a valid Google Gemini API Key.
 
 *   `API_KEY`: Your Google GenAI API key.
 
-*Note: In the current prototype architecture, the API key is accessed via `process.env.API_KEY`. When deploying, ensure this variable is injected into the build or runtime environment.*
-
 ### Netlify Deployment
-This project is configured for Netlify hosting.
+This project is configured as a Vite SPA.
 1.  Connect your repository to Netlify.
-2.  Deploy the repository (No build command is strictly necessary if serving static files, but typical React build processes apply if migrated).
-3.  **Important**: Set the `API_KEY` in the Netlify **Site Configuration > Environment Variables** settings.
+2.  **Build Settings**:
+    *   **Build command**: `npm run build`
+    *   **Publish directory**: `dist`
+3.  **Environment Variables**:
+    *   Go to **Site Configuration > Environment Variables**.
+    *   Add `API_KEY` with your actual Google Gemini API key.
 
 ## 🎨 Visual Identity
 

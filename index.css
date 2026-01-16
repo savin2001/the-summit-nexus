@@ -1,0 +1,99 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Light Mode Defaults */
+  --glass-bg: rgba(255, 255, 255, 0.65);
+  --glass-border: rgba(226, 232, 240, 0.8);
+  --glass-shadow: rgba(148, 163, 184, 0.1);
+  --bg-grad-1: rgba(14, 165, 233, 0.1);
+  --bg-grad-2: rgba(59, 130, 246, 0.1);
+  --grid-line: rgba(15, 23, 42, 0.05);
+}
+
+.dark {
+  /* Dark Mode Overrides */
+  --glass-bg: rgba(255, 255, 255, 0.03);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-shadow: rgba(0, 0, 0, 0.37);
+  --bg-grad-1: rgba(14, 165, 233, 0.15);
+  --bg-grad-2: rgba(59, 130, 246, 0.15);
+  --grid-line: rgba(255, 255, 255, 0.03);
+}
+
+html, body {
+  height: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  transition: background-color 0.5s ease, color 0.5s ease;
+}
+
+.bg-theme-gradient {
+  background-color: transparent;
+  background-image: 
+    radial-gradient(circle at 15% 50%, var(--bg-grad-1), transparent 25%),
+    radial-gradient(circle at 85% 30%, var(--bg-grad-2), transparent 25%);
+  background-attachment: fixed;
+}
+
+/* Glasmorphism Base */
+.glass-panel {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 8px 32px 0 var(--glass-shadow);
+  transition: all 0.3s ease;
+}
+
+.glass-panel-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px 0 var(--glass-shadow);
+  border-color: rgba(14, 165, 233, 0.4);
+}
+
+.cyber-grid {
+  background-size: 60px 60px;
+  background-image: 
+    linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+  mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
+}
+
+/* Animated Glow Text */
+.text-glow {
+  text-shadow: 0 0 20px rgba(34, 211, 238, 0.5);
+}
+
+/* Input styles for glass forms */
+.glass-input {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+.dark .glass-input {
+  background: rgba(0, 0, 0, 0.4);
+}
+.glass-input:focus {
+  border-color: #0ea5e9;
+  box-shadow: 0 0 15px rgba(14, 165, 233, 0.3);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Typewriter Cursor */
+.typing-cursor {
+  border-right: 4px solid #0ea5e9;
+  white-space: nowrap;
+  overflow: hidden;
+  animation: blink-caret 0.75s step-end infinite;
+}
+
+@keyframes blink-caret {
+  from, to { border-color: transparent }
+  50% { border-color: #0ea5e9 }
+}
