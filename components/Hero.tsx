@@ -13,7 +13,7 @@ const Hero: React.FC<HeroProps> = ({ onNavigate }) => {
   const [typingSpeed, setTypingSpeed] = useState(150);
 
   const phrases = [
-    "Security Intelligence",
+    "Business Intelligence",
     "Global Tech Summits",
     "Elite Executive Networking",
     "Strategic Tech Alliances",
@@ -52,7 +52,7 @@ const Hero: React.FC<HeroProps> = ({ onNavigate }) => {
         <div className="text-center animate-fade-in">
           <div className="inline-flex items-center px-4 py-1.5 rounded-full border border-nexus-primary/30 bg-nexus-primary/10 text-nexus-primary text-xs font-bold tracking-widest uppercase mb-10 backdrop-blur-sm shadow-lg shadow-nexus-primary/20">
             <span className="w-2 h-2 rounded-full bg-nexus-primary mr-3 animate-pulse"></span>
-            Intelligence Updated: {new Date().toLocaleDateString()}
+            Market Data Updated: {new Date().toLocaleDateString()}
           </div>
           
           <h1 className="text-4xl sm:text-6xl md:text-7xl font-extrabold text-slate-900 dark:text-white tracking-tight mb-8 leading-tight">

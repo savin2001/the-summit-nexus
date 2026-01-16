@@ -112,7 +112,7 @@ const Navbar: React.FC<NavbarProps> = ({
                 className="flex items-center px-5 py-2.5 rounded-xl border border-nexus-primary/30 text-nexus-primary hover:bg-nexus-primary/10 hover:shadow-[0_0_15px_rgba(14,165,233,0.2)] transition-all duration-300 text-sm font-semibold tracking-wide ml-4"
               >
                  <Lock className="h-4 w-4 mr-2" />
-                 EXECUTIVE PORTAL
+                 MEMBER PORTAL
               </button>
             ) : (
               <div className="relative">
@@ -133,7 +133,7 @@ const Navbar: React.FC<NavbarProps> = ({
                       <p className="text-sm font-bold text-slate-900 dark:text-white truncate">{user.name}</p>
                       <p className="text-xs text-slate-500 dark:text-slate-400 truncate">{user.organization}</p>
                       <span className="inline-block mt-1 px-2 py-0.5 rounded text-[10px] font-bold bg-nexus-primary/20 text-nexus-primary border border-nexus-primary/30">
-                        {user.role} ACCESS
+                        {user.role} ACCOUNT
                       </span>
                     </div>
                     <div className="py-1">
@@ -152,7 +152,7 @@ const Navbar: React.FC<NavbarProps> = ({
                         className="flex w-full items-center px-4 py-3 text-sm text-red-600 dark:text-red-400 hover:bg-red-500/10 transition-colors"
                       >
                         <LogOut className="h-4 w-4 mr-3" />
-                        Termiante Session
+                        Sign Out
                       </button>
                     </div>
                   </div>
@@ -196,7 +196,7 @@ const Navbar: React.FC<NavbarProps> = ({
                 onClick={() => handleNavClick(ViewState.PORTAL)}
                 className="block w-full text-left px-3 py-2 rounded-lg text-base font-medium text-nexus-primary hover:bg-nexus-primary/10"
               >
-                Executive Portal
+                Member Portal
               </button>
             ) : (
               <>
@@ -210,7 +210,7 @@ const Navbar: React.FC<NavbarProps> = ({
                   onClick={onLogout}
                   className="block w-full text-left px-3 py-2 rounded-lg text-base font-medium text-red-500 hover:bg-red-500/10"
                 >
-                  Log Out
+                  Sign Out
                 </button>
               </>
             )}

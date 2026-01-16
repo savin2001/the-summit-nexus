@@ -82,6 +82,7 @@ export const EVENTS: Event[] = [
   {
     id: '201',
     title: 'Global CISO Summit 2024',
+    eventType: 'Summit',
     date: 'Nov 15-17, 2024',
     location: 'London, UK',
     themes: ['Risk Management', 'Boardroom Strategy', 'Crisis Response'],
@@ -92,6 +93,7 @@ export const EVENTS: Event[] = [
   {
     id: '202',
     title: 'Future Tech Expo',
+    eventType: 'Conference',
     date: 'Dec 05, 2024',
     location: 'Singapore',
     themes: ['AI Integration', 'Smart Cities', 'IoT Security'],
@@ -102,6 +104,7 @@ export const EVENTS: Event[] = [
   {
     id: '203',
     title: 'Davos Cyber Retreat',
+    eventType: 'Retreat',
     date: 'Jan 20, 2025',
     location: 'Davos, Switzerland',
     themes: ['Geopolitics', 'Cyber Warfare', 'International Policy'],

@@ -64,12 +64,17 @@ const EventCalendar: React.FC<EventCalendarProps> = ({
                 <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 dark:via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 pointer-events-none"></div>
 
                 <div className="flex-1 relative z-10">
-                  <header className="flex items-start md:items-center gap-4 mb-3">
-                    {event.isExclusive && (
-                      <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 shadow-[0_0_10px_rgba(245,158,11,0.2)]">
-                        <Star className="w-3 h-3 mr-1 fill-current" /> Exclusive
-                      </span>
-                    )}
+                  <header className="flex flex-col md:flex-row md:items-center gap-2 md:gap-4 mb-3">
+                     <div className="flex gap-2">
+                        {event.isExclusive && (
+                          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 shadow-[0_0_10px_rgba(245,158,11,0.2)]">
+                            <Star className="w-3 h-3 mr-1 fill-current" /> Exclusive
+                          </span>
+                        )}
+                        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-nexus-primary/10 text-nexus-primary border border-nexus-primary/20">
+                           {event.eventType}
+                        </span>
+                     </div>
                     <h3 className="text-2xl font-bold text-slate-900 dark:text-white group-hover:text-nexus-primary transition-colors">
                       {event.title}
                     </h3>
@@ -101,7 +106,7 @@ const EventCalendar: React.FC<EventCalendarProps> = ({
                     className="w-full px-6 py-3 rounded-xl font-semibold transition-all duration-300 flex items-center justify-center border border-slate-300 dark:border-slate-700 hover:border-nexus-primary text-slate-700 dark:text-slate-300 hover:text-nexus-primary bg-transparent hover:bg-nexus-primary/5"
                   >
                     <Info className="w-4 h-4 mr-2" />
-                    View Intelligence
+                    View Details
                   </button>
 
                   <button 
@@ -148,7 +153,10 @@ const EventCalendar: React.FC<EventCalendarProps> = ({
                              Exclusive
                            </span>
                         )}
-                         <span className="text-nexus-primary text-xs font-bold tracking-wider uppercase">Event Protocol #{selectedEvent.id}</span>
+                        <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-nexus-primary/10 text-nexus-primary border border-nexus-primary/20">
+                            {selectedEvent.eventType}
+                        </span>
+                         <span className="text-nexus-primary text-xs font-bold tracking-wider uppercase">Event ID #{selectedEvent.id}</span>
                       </div>
                       <h3 className="text-2xl font-bold text-slate-900 dark:text-white">{selectedEvent.title}</h3>
                    </div>
@@ -168,7 +176,7 @@ const EventCalendar: React.FC<EventCalendarProps> = ({
                       </div>
                       <div className="p-4 rounded-xl bg-slate-200/50 dark:bg-white/5 border border-slate-300 dark:border-white/5">
                          <div className="flex items-center text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider mb-1">
-                            <MapPin className="w-3 h-3 mr-1.5" /> Coordinates
+                            <MapPin className="w-3 h-3 mr-1.5" /> Location
                          </div>
                          <div className="text-slate-900 dark:text-white font-semibold">{selectedEvent.location}</div>
                       </div>
@@ -176,16 +184,16 @@ const EventCalendar: React.FC<EventCalendarProps> = ({
 
                    <div className="mb-8">
                       <h4 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider mb-3 flex items-center">
-                         <Info className="w-4 h-4 mr-2 text-nexus-primary" /> Mission Brief
+                         <Info className="w-4 h-4 mr-2 text-nexus-primary" /> Event Overview
                       </h4>
                       <p className="text-slate-600 dark:text-slate-300 leading-relaxed text-sm">
-                         {selectedEvent.description || "Classified event details. Specific agenda items will be decrypted upon registration approval."}
+                         {selectedEvent.description || "Confidential event details. Specific agenda items will be decrypted upon registration approval."}
                       </p>
                    </div>
 
                    <div className="mb-8 p-5 rounded-xl border border-nexus-primary/20 bg-nexus-primary/5">
                       <h4 className="text-sm font-bold text-nexus-primary uppercase tracking-wider mb-3 flex items-center">
-                         <Users className="w-4 h-4 mr-2" /> Target Participants
+                         <Users className="w-4 h-4 mr-2" /> Who Should Attend
                       </h4>
                       <p className="text-slate-700 dark:text-slate-200 leading-relaxed text-sm font-medium">
                          {selectedEvent.targetAudience || "C-Level Executives, Government Officials, and Security Architects."}
@@ -210,7 +218,7 @@ const EventCalendar: React.FC<EventCalendarProps> = ({
                      onClick={handleCloseDetails}
                      className="px-6 py-3 rounded-xl font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-white/5 transition-colors"
                    >
-                     Close Intelligence
+                     Close Details
                    </button>
                    <button 
                      onClick={handleRegisterFromModal}

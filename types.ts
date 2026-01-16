@@ -15,9 +15,12 @@ export interface Insight {
   image: string;
 }
 
+export type EventType = 'Summit' | 'Conference' | 'Workshop' | 'Retreat' | 'Webinar' | 'Briefing';
+
 export interface Event {
   id: string;
   title: string;
+  eventType: EventType;
   date: string;
   location: string;
   themes: string[];
@@ -30,7 +33,8 @@ export enum ViewState {
   HOME = 'HOME',
   KNOWLEDGE = 'KNOWLEDGE',
   EVENTS = 'EVENTS',
-  PORTAL = 'PORTAL'
+  PORTAL = 'PORTAL',
+  ABOUT = 'ABOUT'
 }
 
 export interface User {

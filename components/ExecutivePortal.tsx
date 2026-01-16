@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { GoogleGenAI } from "@google/genai";
 import { Lock, User, ShieldCheck, Activity, FileText, Zap, LogOut, Plus, Globe, Calendar, Briefcase, KeyRound } from 'lucide-react';
-import { User as UserType, Event } from '../types';
+import { User as UserType, Event, EventType } from '../types';
+import ErrorTooltip from './ErrorTooltip';
 
 interface ExecutivePortalProps {
     user: UserType | null;
@@ -15,20 +16,52 @@ const ExecutivePortal: React.FC<ExecutivePortalProps> = ({ user, setUser, onAddE
   const [isLoading, setIsLoading] = useState(false);
   const [aiResponse, setAiResponse] = useState<string | null>(null);
   const [isAiLoading, setIsAiLoading] = useState(false);
+  
+  // Validation State
+  const [loginErrors, setLoginErrors] = useState<Record<string, string>>({});
+  const [eventErrors, setEventErrors] = useState<Record<string, string>>({});
 
   // New Event Form State
   const [showEventForm, setShowEventForm] = useState(false);
-  const [newEvent, setNewEvent] = useState({
+  const [newEvent, setNewEvent] = useState<{
+      title: string;
+      date: string;
+      eventType: EventType;
+      location: string;
+      themes: string;
+      description: string;
+      targetAudience: string;
+  }>({
       title: '',
       date: '',
+      eventType: 'Summit',
       location: '',
       themes: '',
       description: '',
       targetAudience: ''
   });
 
+  // Derived state for button disabling
+  const isLoginValid = email.trim() !== '' && password.trim() !== '';
+  const isEventValid = 
+      newEvent.title.trim() !== '' && 
+      newEvent.date !== '' && 
+      newEvent.location.trim() !== '' && 
+      newEvent.description.trim() !== '' && 
+      newEvent.targetAudience.trim() !== '' && 
+      newEvent.themes.trim() !== '';
+
+  const validateLogin = () => {
+    const errors: Record<string, string> = {};
+    if (!email.trim()) errors.email = "Identity required";
+    if (!password.trim()) errors.password = "Token required";
+    setLoginErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!validateLogin()) return;
     loginSequence('ADMIN');
   };
 
@@ -55,12 +88,33 @@ const ExecutivePortal: React.FC<ExecutivePortalProps> = ({ user, setUser, onAddE
     }, 1500);
   };
 
+  const validateEventForm = () => {
+      const errors: Record<string, string> = {};
+      if (!newEvent.title.trim()) errors.title = "Event Title is required";
+      if (!newEvent.date) errors.date = "Date selection required";
+      if (!newEvent.location.trim()) errors.location = "Location required";
+      if (!newEvent.description.trim()) errors.description = "Brief required";
+      if (!newEvent.targetAudience.trim()) errors.targetAudience = "Audience required";
+      if (!newEvent.themes.trim()) errors.themes = "Themes required";
+      
+      setEventErrors(errors);
+      return Object.keys(errors).length === 0;
+  };
+
   const handleSubmitEvent = (e: React.FormEvent) => {
       e.preventDefault();
+      
+      if (!validateEventForm()) return;
+
+      // Format date nicely
+      const dateObj = new Date(newEvent.date);
+      const formattedDate = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
       const event: Event = {
           id: Date.now().toString(),
           title: newEvent.title,
-          date: newEvent.date,
+          eventType: newEvent.eventType,
+          date: formattedDate,
           location: newEvent.location,
           themes: newEvent.themes.split(',').map(t => t.trim()),
           isExclusive: true, // Executive created events are exclusive by default
@@ -69,7 +123,8 @@ const ExecutivePortal: React.FC<ExecutivePortalProps> = ({ user, setUser, onAddE
       };
       onAddEvent(event);
       setShowEventForm(false);
-      setNewEvent({ title: '', date: '', location: '', themes: '', description: '', targetAudience: '' });
+      setNewEvent({ title: '', date: '', eventType: 'Summit', location: '', themes: '', description: '', targetAudience: '' });
+      setEventErrors({});
   };
 
   const handleAiAnalysis = async () => {
@@ -121,7 +176,7 @@ Displaying cached protocols is currently disabled for security compliance.
                         Executive Dashboard
                     </h2>
                     <p className="text-slate-600 dark:text-slate-400 mt-2 text-lg font-light">
-                        Secure Session Active: <span className="text-slate-900 dark:text-white font-medium">{user.name}</span> <span className="mx-2 text-nexus-primary">•</span> {user.organization}
+                        Welcome, <span className="text-slate-900 dark:text-white font-medium">{user.name}</span> <span className="mx-2 text-nexus-primary">•</span> {user.organization}
                     </p>
                 </div>
                 <div className="flex flex-col items-end">
@@ -130,7 +185,7 @@ Displaying cached protocols is currently disabled for security compliance.
                         ? 'bg-nexus-primary/20 text-nexus-primary border border-nexus-primary/30' 
                         : 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30'
                     }`}>
-                        {user.role} Clearance
+                        {user.role} ACCOUNT
                     </span>
                     <p className="text-xs text-slate-500 dark:text-slate-400 font-mono">{user.email}</p>
                 </div>
@@ -141,29 +196,29 @@ Displaying cached protocols is currently disabled for security compliance.
                 <div className="glass-panel p-6 rounded-2xl relative overflow-hidden group hover:border-yellow-500/30 transition-colors">
                     <div className="absolute -right-6 -top-6 w-24 h-24 bg-yellow-500/20 rounded-full blur-2xl group-hover:bg-yellow-500/30 transition-colors"></div>
                     <div className="flex items-center justify-between mb-4 relative z-10">
-                        <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Global Threat Level</h3>
+                        <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Market Risk Index</h3>
                         <Activity className="text-yellow-500 h-6 w-6" />
                     </div>
-                    <div className="text-4xl font-bold text-yellow-600 dark:text-yellow-500 mb-2 dark:text-glow">ELEVATED</div>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 font-mono">SECTOR: FINANCIAL SERVICES // NODE: LONDON</p>
+                    <div className="text-4xl font-bold text-yellow-600 dark:text-yellow-500 mb-2 dark:text-glow">HIGH VOLATILITY</div>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 font-mono">SECTOR: FINANCIAL SERVICES // REGION: LONDON</p>
                 </div>
                 <div className="glass-panel p-6 rounded-2xl relative overflow-hidden group hover:border-purple-500/30 transition-colors">
                     <div className="absolute -right-6 -top-6 w-24 h-24 bg-purple-500/20 rounded-full blur-2xl group-hover:bg-purple-500/30 transition-colors"></div>
                     <div className="flex items-center justify-between mb-4 relative z-10">
-                        <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Network Consensus</h3>
+                        <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Network Activity</h3>
                         <User className="text-purple-500 h-6 w-6" />
                     </div>
-                    <div className="text-4xl font-bold text-slate-900 dark:text-white mb-2">12 <span className="text-xl text-slate-500 font-normal">Peers</span></div>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 font-mono">CHANNEL: QUANTUM_RESISTANCE_V2</p>
+                    <div className="text-4xl font-bold text-slate-900 dark:text-white mb-2">12 <span className="text-xl text-slate-500 font-normal">Active Peers</span></div>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 font-mono">GROUP: QUANTUM_RESISTANCE_V2</p>
                 </div>
                 <div className="glass-panel p-6 rounded-2xl relative overflow-hidden group hover:border-green-500/30 transition-colors">
                     <div className="absolute -right-6 -top-6 w-24 h-24 bg-green-500/20 rounded-full blur-2xl group-hover:bg-green-500/30 transition-colors"></div>
                     <div className="flex items-center justify-between mb-4 relative z-10">
-                        <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Next Deployment</h3>
+                        <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Next Event</h3>
                         <Briefcase className="text-green-500 h-6 w-6" />
                     </div>
                     <div className="text-xl font-bold text-slate-900 dark:text-white mb-2 truncate">Davos Cyber Retreat</div>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 font-mono">STATUS: CONFIRMED // JAN 20, 2025</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 font-mono">STATUS: REGISTERED // JAN 20, 2025</p>
                 </div>
             </div>
 
@@ -175,7 +230,7 @@ Displaying cached protocols is currently disabled for security compliance.
                     <div className="flex items-center justify-between mb-6">
                         <h3 className="text-xl font-bold text-slate-900 dark:text-white flex items-center">
                             <Zap className="mr-3 text-nexus-glow h-6 w-6" />
-                            AI Strategic Intelligence
+                            AI Business Insights
                         </h3>
                         <button 
                             onClick={handleAiAnalysis}
@@ -193,7 +248,7 @@ Displaying cached protocols is currently disabled for security compliance.
                                     <div className="absolute inset-0 border-t-2 border-nexus-primary rounded-full animate-spin"></div>
                                     <div className="absolute inset-2 border-t-2 border-purple-500 rounded-full animate-spin reverse"></div>
                                 </div>
-                                <span className="text-nexus-primary animate-pulse text-xs uppercase tracking-widest">Querying Neural Net...</span>
+                                <span className="text-nexus-primary animate-pulse text-xs uppercase tracking-widest">Generating Analysis...</span>
                             </div>
                         ) : aiResponse ? (
                             <div className="prose prose-invert max-w-none text-slate-700 dark:text-slate-300">
@@ -206,7 +261,7 @@ Displaying cached protocols is currently disabled for security compliance.
                         ) : (
                             <div className="text-slate-500 dark:text-slate-600 flex flex-col items-center justify-center py-10 h-full">
                                 <FileText className="h-16 w-16 mb-4 opacity-30" />
-                                <p>Awaiting directive. Select "Generate Brief" for analysis.</p>
+                                <p>Ready to generate. Select "Generate Brief" to start.</p>
                             </div>
                         )}
                     </div>
@@ -218,10 +273,10 @@ Displaying cached protocols is currently disabled for security compliance.
                         <div className="flex items-center justify-between mb-6">
                             <h3 className="text-xl font-bold text-slate-900 dark:text-white flex items-center">
                                 <Globe className="mr-3 text-emerald-500 dark:text-emerald-400 h-6 w-6" />
-                                Strategic Event Deployment
+                                Event Management
                             </h3>
                             <button 
-                                onClick={() => setShowEventForm(!showEventForm)}
+                                onClick={() => { setShowEventForm(!showEventForm); setEventErrors({}); }}
                                 className="p-2 rounded-lg bg-slate-200 dark:bg-white/5 hover:bg-slate-300 dark:hover:bg-white/10 text-slate-700 dark:text-white transition-colors"
                             >
                                 <Plus className={`h-5 w-5 transition-transform duration-300 ${showEventForm ? 'rotate-45' : ''}`} />
@@ -233,94 +288,141 @@ Displaying cached protocols is currently disabled for security compliance.
                                 <div className="w-16 h-16 rounded-full bg-slate-200 dark:bg-white/5 flex items-center justify-center mb-4">
                                     <Calendar className="h-8 w-8 text-slate-500" />
                                 </div>
-                                <h4 className="text-lg font-medium text-slate-900 dark:text-white mb-2">Initialize New Summit</h4>
+                                <h4 className="text-lg font-medium text-slate-900 dark:text-white mb-2">Create New Event</h4>
                                 <p className="text-slate-500 text-sm max-w-xs mb-6">Create high-priority gatherings for the C-Suite network. All events created here are marked as Exclusive.</p>
                                 <button 
-                                    onClick={() => setShowEventForm(true)}
+                                    onClick={() => { setShowEventForm(true); setEventErrors({}); }}
                                     className="px-6 py-3 bg-white dark:bg-white/5 hover:bg-slate-100 dark:hover:bg-white/10 text-slate-900 dark:text-white border border-slate-200 dark:border-white/10 rounded-xl transition-all font-medium flex items-center shadow-sm"
                                 >
                                     <Plus className="w-4 h-4 mr-2" /> Configure Event
                                 </button>
                             </div>
                         ) : (
-                            <form onSubmit={handleSubmitEvent} className="space-y-4 bg-white/50 dark:bg-black/40 p-6 rounded-xl border border-slate-200 dark:border-white/5 animate-fade-in max-h-[400px] overflow-y-auto">
-                                <div>
-                                    <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Event Directive (Title)</label>
+                            <form onSubmit={handleSubmitEvent} noValidate className="space-y-4 bg-white/50 dark:bg-black/40 p-6 rounded-xl border border-slate-200 dark:border-white/5 animate-fade-in max-h-[400px] overflow-y-auto">
+                                <div className="relative">
+                                    <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Event Title</label>
                                     <input 
                                         type="text" 
                                         required
-                                        className="w-full glass-input px-4 py-3 rounded-lg text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:ring-1 focus:ring-nexus-primary transition-all text-sm"
+                                        className={`w-full glass-input px-4 py-3 rounded-lg text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:ring-1 transition-all text-sm ${eventErrors.title ? 'border-rose-500 focus:ring-rose-500' : 'focus:ring-nexus-primary'}`}
                                         placeholder="e.g. Asia-Pacific Cyber Defense Forum"
                                         value={newEvent.title}
-                                        onChange={e => setNewEvent({...newEvent, title: e.target.value})}
+                                        onChange={e => {
+                                            setNewEvent({...newEvent, title: e.target.value});
+                                            if (eventErrors.title) setEventErrors({...eventErrors, title: ''});
+                                        }}
                                     />
+                                    {eventErrors.title && <ErrorTooltip message={eventErrors.title} />}
                                 </div>
+                                
                                 <div className="grid grid-cols-2 gap-4">
-                                    <div>
+                                    <div className="relative">
                                         <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Timeline</label>
                                         <input 
-                                            type="text" 
+                                            type="date" 
                                             required
-                                            className="w-full glass-input px-4 py-3 rounded-lg text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:ring-1 focus:ring-nexus-primary transition-all text-sm"
-                                            placeholder="e.g. Mar 12, 2025"
+                                            className={`w-full glass-input px-4 py-3 rounded-lg text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:ring-1 transition-all text-sm [color-scheme:light] dark:[color-scheme:dark] ${eventErrors.date ? 'border-rose-500 focus:ring-rose-500' : 'focus:ring-nexus-primary'}`}
                                             value={newEvent.date}
-                                            onChange={e => setNewEvent({...newEvent, date: e.target.value})}
+                                            onChange={e => {
+                                                setNewEvent({...newEvent, date: e.target.value});
+                                                if (eventErrors.date) setEventErrors({...eventErrors, date: ''});
+                                            }}
                                         />
+                                        {eventErrors.date && <ErrorTooltip message={eventErrors.date} />}
                                     </div>
-                                    <div>
-                                        <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Coordinates</label>
-                                        <input 
-                                            type="text" 
+                                    <div className="relative">
+                                        <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Category</label>
+                                        <select
                                             required
-                                            className="w-full glass-input px-4 py-3 rounded-lg text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:ring-1 focus:ring-nexus-primary transition-all text-sm"
-                                            placeholder="e.g. Tokyo, JP"
-                                            value={newEvent.location}
-                                            onChange={e => setNewEvent({...newEvent, location: e.target.value})}
-                                        />
+                                            className="w-full glass-input px-4 py-3 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-nexus-primary transition-all text-sm appearance-none"
+                                            value={newEvent.eventType}
+                                            onChange={e => setNewEvent({...newEvent, eventType: e.target.value as EventType})}
+                                        >
+                                            <option value="Summit" className="bg-white dark:bg-slate-900">Summit</option>
+                                            <option value="Conference" className="bg-white dark:bg-slate-900">Conference</option>
+                                            <option value="Workshop" className="bg-white dark:bg-slate-900">Workshop</option>
+                                            <option value="Retreat" className="bg-white dark:bg-slate-900">Retreat</option>
+                                            <option value="Webinar" className="bg-white dark:bg-slate-900">Webinar</option>
+                                            <option value="Briefing" className="bg-white dark:bg-slate-900">Briefing</option>
+                                        </select>
                                     </div>
                                 </div>
-                                <div>
-                                    <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Mission Brief (Description)</label>
+
+                                <div className="relative">
+                                    <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Location</label>
+                                    <input 
+                                        type="text" 
+                                        required
+                                        className={`w-full glass-input px-4 py-3 rounded-lg text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:ring-1 transition-all text-sm ${eventErrors.location ? 'border-rose-500 focus:ring-rose-500' : 'focus:ring-nexus-primary'}`}
+                                        placeholder="e.g. Tokyo, JP"
+                                        value={newEvent.location}
+                                        onChange={e => {
+                                            setNewEvent({...newEvent, location: e.target.value});
+                                            if (eventErrors.location) setEventErrors({...eventErrors, location: ''});
+                                        }}
+                                    />
+                                    {eventErrors.location && <ErrorTooltip message={eventErrors.location} />}
+                                </div>
+
+                                <div className="relative">
+                                    <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Description</label>
                                     <textarea 
                                         required
-                                        className="w-full glass-input px-4 py-3 rounded-lg text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:ring-1 focus:ring-nexus-primary transition-all text-sm resize-none h-20"
+                                        className={`w-full glass-input px-4 py-3 rounded-lg text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:ring-1 transition-all text-sm resize-none h-20 ${eventErrors.description ? 'border-rose-500 focus:ring-rose-500' : 'focus:ring-nexus-primary'}`}
                                         placeholder="Brief description of the event..."
                                         value={newEvent.description}
-                                        onChange={e => setNewEvent({...newEvent, description: e.target.value})}
+                                        onChange={e => {
+                                            setNewEvent({...newEvent, description: e.target.value});
+                                            if (eventErrors.description) setEventErrors({...eventErrors, description: ''});
+                                        }}
                                     />
+                                    {eventErrors.description && <ErrorTooltip message={eventErrors.description} />}
                                 </div>
-                                <div>
+                                <div className="relative">
                                     <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Target Participants</label>
                                     <input 
                                         type="text" 
                                         required
-                                        className="w-full glass-input px-4 py-3 rounded-lg text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:ring-1 focus:ring-nexus-primary transition-all text-sm"
+                                        className={`w-full glass-input px-4 py-3 rounded-lg text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:ring-1 transition-all text-sm ${eventErrors.targetAudience ? 'border-rose-500 focus:ring-rose-500' : 'focus:ring-nexus-primary'}`}
                                         placeholder="e.g. CISOs, Government Officials"
                                         value={newEvent.targetAudience}
-                                        onChange={e => setNewEvent({...newEvent, targetAudience: e.target.value})}
+                                        onChange={e => {
+                                            setNewEvent({...newEvent, targetAudience: e.target.value});
+                                            if (eventErrors.targetAudience) setEventErrors({...eventErrors, targetAudience: ''});
+                                        }}
                                     />
+                                    {eventErrors.targetAudience && <ErrorTooltip message={eventErrors.targetAudience} />}
                                 </div>
-                                <div>
+                                <div className="relative">
                                     <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Strategic Themes</label>
                                     <input 
                                         type="text" 
                                         required
-                                        className="w-full glass-input px-4 py-3 rounded-lg text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:ring-1 focus:ring-nexus-primary transition-all text-sm"
+                                        className={`w-full glass-input px-4 py-3 rounded-lg text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:ring-1 transition-all text-sm ${eventErrors.themes ? 'border-rose-500 focus:ring-rose-500' : 'focus:ring-nexus-primary'}`}
                                         placeholder="e.g. AI Ethics, Zero Trust"
                                         value={newEvent.themes}
-                                        onChange={e => setNewEvent({...newEvent, themes: e.target.value})}
+                                        onChange={e => {
+                                            setNewEvent({...newEvent, themes: e.target.value});
+                                            if (eventErrors.themes) setEventErrors({...eventErrors, themes: ''});
+                                        }}
                                     />
+                                    {eventErrors.themes && <ErrorTooltip message={eventErrors.themes} />}
                                 </div>
                                 <div className="pt-2 flex gap-3">
                                     <button 
                                         type="submit"
-                                        className="flex-1 bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/50 py-3 rounded-lg font-bold hover:bg-emerald-500/30 transition-all text-sm uppercase tracking-wide shadow-lg"
+                                        disabled={!isEventValid}
+                                        className={`flex-1 py-3 rounded-lg font-bold transition-all text-sm uppercase tracking-wide shadow-lg ${
+                                            !isEventValid
+                                            ? 'bg-slate-300 dark:bg-white/5 text-slate-500 border border-slate-300 dark:border-white/5 cursor-not-allowed opacity-60'
+                                            : 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/50 hover:bg-emerald-500/30'
+                                        }`}
                                     >
-                                        Deploy
+                                        Publish Event
                                     </button>
                                     <button 
                                         type="button"
-                                        onClick={() => setShowEventForm(false)}
+                                        onClick={() => { setShowEventForm(false); setEventErrors({}); }}
                                         className="px-4 py-3 bg-slate-200 dark:bg-white/5 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white rounded-lg font-medium transition-colors"
                                     >
                                         Cancel
@@ -334,9 +436,9 @@ Displaying cached protocols is currently disabled for security compliance.
                          <div className="w-16 h-16 rounded-full bg-slate-200 dark:bg-white/5 flex items-center justify-center mb-4">
                             <Lock className="h-8 w-8 text-slate-400" />
                         </div>
-                        <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Event Deployment Restricted</h3>
+                        <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Event Creation Restricted</h3>
                         <p className="text-slate-500 text-sm max-w-xs">
-                            Your clearance level (EXECUTIVE) permits viewing and attendance only. Contact an Administrator to elevate privileges.
+                            Your access level (EXECUTIVE) permits viewing and attendance only. Contact an Administrator to elevate privileges.
                         </p>
                     </div>
                 )}
@@ -360,19 +462,19 @@ Displaying cached protocols is currently disabled for security compliance.
                 <Lock className="h-8 w-8 text-white" />
             </div>
           <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-            Restricted Access
+            Member Login
           </h2>
           <p className="mt-3 text-sm text-slate-600 dark:text-slate-400">
-            Secure Member Authentication Protocol
+            Please sign in to your professional account
           </p>
         </div>
         
-        <form className="mt-8 space-y-6" onSubmit={handleLogin}>
+        <form className="mt-8 space-y-6" onSubmit={handleLogin} noValidate>
           
           {/* Quick Access Section */}
           <div className="bg-slate-100 dark:bg-white/5 p-4 rounded-xl border border-slate-200 dark:border-white/10 mb-6">
              <h4 className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-3 flex items-center">
-                <KeyRound className="w-3 h-3 mr-1" /> Quick Simulation Access
+                <KeyRound className="w-3 h-3 mr-1" /> Demo Accounts
              </h4>
              <div className="grid grid-cols-2 gap-3">
                 <button
@@ -393,7 +495,7 @@ Displaying cached protocols is currently disabled for security compliance.
           </div>
 
           <div className="space-y-4">
-            <div>
+            <div className="relative">
               <label htmlFor="email-address" className="sr-only">Email address</label>
               <input
                 id="email-address"
@@ -401,12 +503,16 @@ Displaying cached protocols is currently disabled for security compliance.
                 type="email"
                 required
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full glass-input px-5 py-4 rounded-xl text-slate-900 dark:text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-nexus-primary focus:border-transparent transition-all"
-                placeholder="Corporate Identity"
+                onChange={(e) => {
+                    setEmail(e.target.value);
+                    if (loginErrors.email) setLoginErrors({...loginErrors, email: ''});
+                }}
+                className={`w-full glass-input px-5 py-4 rounded-xl text-slate-900 dark:text-white placeholder-slate-500 focus:outline-none focus:ring-2 transition-all ${loginErrors.email ? 'border-rose-500 focus:ring-rose-500' : 'focus:ring-nexus-primary focus:border-transparent'}`}
+                placeholder="Business Email"
               />
+              {loginErrors.email && <ErrorTooltip message={loginErrors.email} />}
             </div>
-            <div>
+            <div className="relative">
               <label htmlFor="password" className="sr-only">Password</label>
               <input
                 id="password"
@@ -414,18 +520,26 @@ Displaying cached protocols is currently disabled for security compliance.
                 type="password"
                 required
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full glass-input px-5 py-4 rounded-xl text-slate-900 dark:text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-nexus-primary focus:border-transparent transition-all"
-                placeholder="Encrypted Token"
+                onChange={(e) => {
+                    setPassword(e.target.value);
+                    if (loginErrors.password) setLoginErrors({...loginErrors, password: ''});
+                }}
+                className={`w-full glass-input px-5 py-4 rounded-xl text-slate-900 dark:text-white placeholder-slate-500 focus:outline-none focus:ring-2 transition-all ${loginErrors.password ? 'border-rose-500 focus:ring-rose-500' : 'focus:ring-nexus-primary focus:border-transparent'}`}
+                placeholder="Password"
               />
+              {loginErrors.password && <ErrorTooltip message={loginErrors.password} />}
             </div>
           </div>
 
           <div>
             <button
               type="submit"
-              disabled={isLoading}
-              className="group relative w-full flex justify-center py-4 px-4 border border-transparent text-sm font-bold rounded-xl text-white bg-nexus-primary hover:bg-nexus-glow focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-nexus-primary transition-all shadow-[0_0_20px_rgba(14,165,233,0.4)] hover:shadow-[0_0_30px_rgba(34,211,238,0.6)] disabled:opacity-70 disabled:cursor-not-allowed uppercase tracking-wider"
+              disabled={isLoading || !isLoginValid}
+              className={`group relative w-full flex justify-center py-4 px-4 border border-transparent text-sm font-bold rounded-xl text-white transition-all uppercase tracking-wider ${
+                  isLoading || !isLoginValid 
+                  ? 'bg-slate-400 dark:bg-slate-700 cursor-not-allowed opacity-50' 
+                  : 'bg-nexus-primary hover:bg-nexus-glow shadow-[0_0_20px_rgba(14,165,233,0.4)] hover:shadow-[0_0_30px_rgba(34,211,238,0.6)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-nexus-primary'
+              }`}
             >
               {isLoading ? (
                   <span className="flex items-center">
@@ -433,16 +547,16 @@ Displaying cached protocols is currently disabled for security compliance.
                           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                       </svg>
-                      Verifying Credentials...
+                      Signing in...
                   </span>
               ) : (
-                  'Initiate Session'
+                  'Sign In'
               )}
             </button>
           </div>
           
           <div className="flex items-center justify-center pt-2">
-             <a href="#" className="text-xs text-nexus-primary hover:text-nexus-glow transition-colors border-b border-nexus-primary/30 hover:border-nexus-glow pb-0.5">Request Access Clearance</a>
+             <a href="mailto:admin@thesummitnexus.com" className="text-xs text-nexus-primary hover:text-nexus-glow transition-colors border-b border-nexus-primary/30 hover:border-nexus-glow pb-0.5">Apply for Membership</a>
           </div>
         </form>
       </div>

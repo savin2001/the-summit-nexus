@@ -5,6 +5,7 @@ import SectorGrid from './components/SectorGrid';
 import KnowledgeHub from './components/KnowledgeHub';
 import EventCalendar from './components/EventCalendar';
 import ExecutivePortal from './components/ExecutivePortal';
+import CorporateView from './components/CorporateView';
 import Footer from './components/Footer';
 import { ViewState, User, Event } from './types';
 import { EVENTS as INITIAL_EVENTS } from './constants';
@@ -68,6 +69,8 @@ const App: React.FC = () => {
             onAddEvent={handleAddEvent}
           />
         );
+      case ViewState.ABOUT:
+        return <CorporateView />;
       case ViewState.HOME:
       default:
         return (
@@ -120,7 +123,7 @@ const App: React.FC = () => {
         </div>
       </main>
 
-      <Footer />
+      <Footer onNavigate={setCurrentView} />
     </div>
   );
 };
