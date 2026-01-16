@@ -19,30 +19,31 @@ const Footer: React.FC = () => {
           <div>
             <h4 className="text-slate-900 dark:text-white font-semibold mb-4 uppercase text-xs tracking-wider">Platform</h4>
             <ul className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
-              <li><a href="#" className="hover:text-nexus-primary transition-colors">Sector Intelligence</a></li>
-              <li><a href="#" className="hover:text-nexus-primary transition-colors">Event Calendar</a></li>
-              <li><a href="#" className="hover:text-nexus-primary transition-colors">Executive Portal</a></li>
+              <li><a href="#" rel="nofollow" aria-label="Sector Intelligence (Demo)" className="hover:text-nexus-primary transition-colors">Sector Intelligence</a></li>
+              <li><a href="#" rel="nofollow" aria-label="Event Calendar (Demo)" className="hover:text-nexus-primary transition-colors">Event Calendar</a></li>
+              <li><a href="#" rel="nofollow" aria-label="Executive Portal (Demo)" className="hover:text-nexus-primary transition-colors">Executive Portal</a></li>
             </ul>
           </div>
           
           <div>
             <h4 className="text-slate-900 dark:text-white font-semibold mb-4 uppercase text-xs tracking-wider">Corporate</h4>
             <ul className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
-              <li><a href="#" className="hover:text-nexus-primary transition-colors">About Us</a></li>
-              <li><a href="#" className="hover:text-nexus-primary transition-colors">Contact Support</a></li>
-              <li><a href="#" className="hover:text-nexus-primary transition-colors">Privacy Policy</a></li>
+              <li><a href="#" rel="nofollow" aria-label="About Us (Demo)" className="hover:text-nexus-primary transition-colors">About Us</a></li>
+              <li><a href="#" rel="nofollow" aria-label="Contact Support (Demo)" className="hover:text-nexus-primary transition-colors">Contact Support</a></li>
+              <li><a href="#" rel="nofollow" aria-label="Privacy Policy (Demo)" className="hover:text-nexus-primary transition-colors">Privacy Policy</a></li>
             </ul>
           </div>
           
           <div>
             <h4 className="text-slate-900 dark:text-white font-semibold mb-4 uppercase text-xs tracking-wider">Secure Newsletter</h4>
-            <form className="flex flex-col gap-2">
+            <form className="flex flex-col gap-2" onSubmit={(e) => e.preventDefault()}>
               <input 
                 type="email" 
                 placeholder="Work Email" 
+                aria-label="Email address for newsletter"
                 className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white px-3 py-2 rounded-sm text-sm focus:outline-none focus:border-nexus-primary transition-colors"
               />
-              <button className="bg-nexus-primary/20 text-nexus-primary border border-nexus-primary/50 px-3 py-2 rounded-sm text-sm font-semibold hover:bg-nexus-primary hover:text-white dark:hover:text-nexus-darker transition-colors">
+              <button type="submit" className="bg-nexus-primary/20 text-nexus-primary border border-nexus-primary/50 px-3 py-2 rounded-sm text-sm font-semibold hover:bg-nexus-primary hover:text-white dark:hover:text-nexus-darker transition-colors">
                 Subscribe
               </button>
             </form>

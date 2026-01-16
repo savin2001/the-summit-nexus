@@ -55,7 +55,7 @@ const EventCalendar: React.FC<EventCalendarProps> = ({
             const isRegistered = registeredEventIds.includes(event.id);
             
             return (
-              <div 
+              <article 
                 key={event.id} 
                 className="glass-panel p-8 rounded-2xl md:flex items-center justify-between group hover:bg-slate-50 dark:hover:bg-white/[0.02] transition-all duration-300 border border-slate-200 dark:border-white/5 hover:border-nexus-primary/30 relative overflow-hidden animate-slide-up"
                 style={{ animationDelay: `${index * 150}ms` }}
@@ -64,7 +64,7 @@ const EventCalendar: React.FC<EventCalendarProps> = ({
                 <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 dark:via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 pointer-events-none"></div>
 
                 <div className="flex-1 relative z-10">
-                  <div className="flex items-start md:items-center gap-4 mb-3">
+                  <header className="flex items-start md:items-center gap-4 mb-3">
                     {event.isExclusive && (
                       <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 shadow-[0_0_10px_rgba(245,158,11,0.2)]">
                         <Star className="w-3 h-3 mr-1 fill-current" /> Exclusive
@@ -73,7 +73,7 @@ const EventCalendar: React.FC<EventCalendarProps> = ({
                     <h3 className="text-2xl font-bold text-slate-900 dark:text-white group-hover:text-nexus-primary transition-colors">
                       {event.title}
                     </h3>
-                  </div>
+                  </header>
                   
                   <div className="flex flex-col sm:flex-row sm:items-center gap-6 text-slate-500 dark:text-slate-400 text-sm mb-6">
                     <div className="flex items-center">
@@ -125,7 +125,7 @@ const EventCalendar: React.FC<EventCalendarProps> = ({
                     )}
                   </button>
                 </div>
-              </div>
+              </article>
             );
           })}
         </div>
@@ -152,7 +152,7 @@ const EventCalendar: React.FC<EventCalendarProps> = ({
                       </div>
                       <h3 className="text-2xl font-bold text-slate-900 dark:text-white">{selectedEvent.title}</h3>
                    </div>
-                   <button onClick={handleCloseDetails} className="p-2 hover:bg-slate-200 dark:hover:bg-white/10 rounded-full transition-colors text-slate-500 dark:text-slate-400">
+                   <button onClick={handleCloseDetails} className="p-2 hover:bg-slate-200 dark:hover:bg-white/10 rounded-full transition-colors text-slate-500 dark:text-slate-400" aria-label="Close modal">
                      <X className="w-6 h-6" />
                    </button>
                 </div>
